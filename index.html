@@ -1,1 +1,537 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JEE Tracker | 2026 Mastery</title>
+    
+    <link rel="icon" type="image/jpeg" href="logo.jpeg">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/lucide/0.263.1/lucide.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap');
+        
+        :root {
+            --primary-accent: #ffffff;
+            --bg-dark: #000000;
+            --glass-bg: rgba(10, 10, 10, 0.8);
+            --transition-speed: 0.4s;
+            --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+        }
 
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background: var(--bg-dark);
+            color: #f8fafc;
+            overflow-x: hidden;
+            margin: 0;
+            scroll-behavior: smooth;
+        }
+
+        .view-section {
+            transition: opacity var(--transition-speed) var(--ease-out-expo), 
+                        transform var(--transition-speed) var(--ease-out-expo),
+                        visibility var(--transition-speed);
+            position: absolute;
+            width: 100%;
+            min-height: 100vh;
+            top: 0;
+            left: 0;
+            opacity: 1;
+            transform: scale(1);
+            visibility: visible;
+        }
+
+        .hidden-section {
+            opacity: 0;
+            transform: scale(0.98);
+            visibility: hidden;
+            pointer-events: none;
+        }
+
+        .animate-in {
+            animation: slideUp 0.6s var(--ease-out-expo) forwards;
+            opacity: 0;
+        }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .glass {
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .glass:hover {
+            border-color: rgba(255, 255, 255, 0.2);
+            box-shadow: 0 0 30px rgba(255, 255, 255, 0.05);
+        }
+
+        .custom-checkbox {
+            appearance: none;
+            width: 1.4rem;
+            height: 1.4rem;
+            border: 2px solid #334155;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+        }
+
+        .custom-checkbox:checked {
+            background-color: white;
+            border-color: white;
+        }
+
+        .custom-checkbox:checked::after {
+            content: '✓';
+            position: absolute;
+            color: black;
+            font-size: 0.9rem;
+            font-weight: bold;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        .tab-btn {
+            transition: all 0.3s var(--ease-out-expo);
+            color: #64748b;
+        }
+
+        .tab-btn.active {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+        }
+
+        .priority-badge-A { background: #333; color: #fff; border: 1px solid #555; }
+        .priority-badge-B { background: #222; color: #ccc; border: 1px solid #444; }
+        .priority-badge-C { background: #111; color: #aaa; border: 1px solid #333; }
+        .priority-badge-D { background: #000; color: #888; border: 1px solid #222; }
+
+        #toast {
+            visibility: hidden;
+            min-width: 250px;
+            background-color: #ffffff;
+            color: #000;
+            text-align: center;
+            border-radius: 12px;
+            padding: 16px;
+            position: fixed;
+            z-index: 1000;
+            left: 50%;
+            bottom: 30px;
+            transform: translateX(-50%);
+            box-shadow: 0 10px 40px rgba(0,0,0,0.8);
+            font-weight: bold;
+        }
+
+        #toast.show { visibility: visible; animation: fadein 0.5s var(--ease-out-expo), fadeout 0.5s 2.5s forwards; }
+        
+        @keyframes fadein { from {bottom: 0; opacity: 0;} to {bottom: 30px; opacity: 1;} }
+        @keyframes fadeout { from {bottom: 30px; opacity: 1;} to {bottom: 0; opacity: 0;} }
+
+        /* Timer Circle Animation */
+        .timer-svg { transform: rotate(-90deg); }
+        .timer-circle {
+            transition: stroke-dashoffset 1s linear;
+            stroke-dasharray: 283;
+            stroke-dashoffset: 0;
+        }
+    </style>
+</head>
+<body class="bg-black flex flex-col min-h-screen">
+
+    <div id="toast">Saved!</div>
+
+    <!-- 1. LANDING PAGE -->
+    <div id="view-landing" class="view-section flex flex-col items-center justify-center text-center px-6">
+        <div class="absolute inset-0 opacity-10 pointer-events-none" style="background-image: radial-gradient(#ffffff 1px, transparent 1px); background-size: 30px 30px;"></div>
+        
+        <div class="relative z-10">
+            <div class="mb-8 w-32 h-32 mx-auto rounded-3xl bg-white/5 border border-white/10 flex items-center justify-center shadow-2xl overflow-hidden animate-in" style="animation-delay: 0.1s">
+                <img src="logo.jpeg" alt="Logo" class="w-full h-full object-cover grayscale brightness-110" onerror="this.style.display='none'; document.getElementById('logo-fallback-landing').classList.remove('hidden');">
+                <div id="logo-fallback-landing" class="hidden"><i data-lucide="graduation-cap" class="w-16 h-16 text-white"></i></div>
+            </div>
+            <h1 class="text-6xl md:text-8xl font-black tracking-tighter mb-4 text-white animate-in" style="animation-delay: 0.2s">JEE <span class="text-slate-500">TRACKER</span></h1>
+            <p class="text-slate-500 text-lg mb-10 font-medium animate-in" style="animation-delay: 0.3s">Your Daily Roadmap to JEE 2026 Mastery</p>
+            
+            <div class="flex flex-col sm:flex-row gap-4 justify-center animate-in" style="animation-delay: 0.4s">
+                <button onclick="showView('view-tracker')" class="px-10 py-5 bg-white text-black hover:bg-slate-200 rounded-2xl font-bold transition-all transform hover:scale-105 shadow-xl flex items-center justify-center gap-3">
+                    <i data-lucide="layout-list"></i> TRACKER
+                </button>
+                <button onclick="showView('view-goals-menu')" class="px-10 py-5 bg-zinc-900 border border-white/10 hover:bg-zinc-800 text-white rounded-2xl font-bold transition-all transform hover:scale-105 shadow-xl flex items-center justify-center gap-3">
+                    <i data-lucide="calendar-check"></i> GOALS
+                </button>
+                <button onclick="showView('view-pomodoro')" class="px-10 py-5 bg-zinc-900 border border-white/10 hover:bg-zinc-800 text-white rounded-2xl font-bold transition-all transform hover:scale-105 shadow-xl flex items-center justify-center gap-3">
+                    <i data-lucide="timer"></i> POMODORO
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 2. GOALS MENU -->
+    <div id="view-goals-menu" class="view-section hidden-section flex flex-col items-center justify-center px-6">
+        <button onclick="showView('view-landing')" class="absolute top-10 left-10 flex items-center gap-2 text-slate-500 hover:text-white transition-colors font-bold">
+            <i data-lucide="arrow-left"></i> BACK
+        </button>
+        <h2 class="text-4xl font-black text-white mb-12">Select Subject</h2>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 w-full max-w-5xl">
+            <button onclick="openSubjectGoals('math')" class="glass p-12 rounded-3xl group transition-all flex flex-col items-center animate-in" style="animation-delay: 0.1s">
+                <h3 class="text-3xl font-bold text-white tracking-widest group-hover:text-slate-300 transition-colors uppercase">Maths</h3>
+            </button>
+            <button onclick="openSubjectGoals('physics')" class="glass p-12 rounded-3xl group transition-all flex flex-col items-center animate-in" style="animation-delay: 0.2s">
+                <h3 class="text-3xl font-bold text-white tracking-widest group-hover:text-slate-300 transition-colors uppercase">Physics</h3>
+            </button>
+            <button onclick="openSubjectGoals('chemistry')" class="glass p-12 rounded-3xl group transition-all flex flex-col items-center animate-in" style="animation-delay: 0.3s">
+                <h3 class="text-3xl font-bold text-white tracking-widest group-hover:text-slate-300 transition-colors uppercase">Chemistry</h3>
+            </button>
+        </div>
+    </div>
+
+    <!-- 3. SUBJECT GOALS EDITOR -->
+    <div id="view-subject-goals" class="view-section hidden-section flex flex-col items-center pt-32 px-6">
+        <button onclick="showView('view-goals-menu')" class="absolute top-10 left-10 flex items-center gap-2 text-slate-500 hover:text-white transition-colors font-bold">
+            <i data-lucide="arrow-left"></i> BACK
+        </button>
+        <div class="w-full max-w-3xl glass p-8 rounded-[2.5rem] animate-in">
+            <div class="mb-8">
+                <h2 id="current-subject-title" class="text-4xl font-black text-white uppercase tracking-tighter"></h2>
+                <p class="text-slate-600 text-sm font-bold">Daily Progress Tracker</p>
+            </div>
+            <div class="relative mb-8">
+                <input type="text" id="goal-input" placeholder="Type a goal and press Enter..." 
+                    class="w-full bg-black border border-white/10 rounded-2xl px-6 py-5 text-lg text-white focus:outline-none focus:border-white/30 transition-all">
+            </div>
+            <div id="subject-goals-list" class="space-y-3"></div>
+        </div>
+    </div>
+
+    <!-- 4. TRACKER -->
+    <div id="view-tracker" class="view-section hidden-section">
+        <nav class="sticky top-0 z-40 glass border-b border-white/5 px-4 py-4">
+            <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-6">
+                <button onclick="showView('view-landing')" class="flex items-center gap-3 group">
+                    <div class="w-10 h-10 bg-zinc-900 border border-white/10 rounded-xl flex items-center justify-center group-hover:bg-zinc-800 transition-colors">
+                        <i data-lucide="home" class="w-5 h-5 text-white"></i>
+                    </div>
+                    <span class="text-xl font-bold tracking-tight text-white uppercase">JEE 2026</span>
+                </button>
+                <div class="flex gap-1 p-1 bg-zinc-900 rounded-2xl border border-white/5">
+                    <button onclick="switchTab('Math')" id="tab-Math" class="tab-btn active px-6 py-2.5 rounded-xl text-sm font-bold">Math</button>
+                    <button onclick="switchTab('Physics')" id="tab-Physics" class="tab-btn px-6 py-2.5 rounded-xl text-sm font-bold">Physics</button>
+                    <button onclick="switchTab('Chemistry')" id="tab-Chemistry" class="tab-btn px-6 py-2.5 rounded-xl text-sm font-bold">Chem</button>
+                </div>
+                <div class="bg-white/5 px-5 py-2 rounded-xl border border-white/10 text-white font-bold"><span id="overall-percentage">0%</span> Complete</div>
+            </div>
+        </nav>
+        <main class="max-w-7xl mx-auto px-4 mt-8 pb-10 animate-in">
+            <div class="glass rounded-[2rem] overflow-hidden"><div class="overflow-x-auto"><table class="w-full text-left">
+                <thead><tr class="bg-zinc-900/50 text-slate-500 text-[10px] uppercase tracking-widest border-b border-white/5">
+                    <th class="p-6">Chapter Name</th><th class="p-6 text-center">Theory</th><th class="p-6 text-center">2025</th><th class="p-6 text-center">2024</th><th class="p-6 text-center">2023</th><th class="p-6 text-center">2022</th><th class="p-6 text-center">Booster</th>
+                </tr></thead>
+                <tbody id="tracker-body"></tbody>
+            </table></div></div>
+        </main>
+    </div>
+
+    <!-- 5. POMODORO PAGE -->
+    <div id="view-pomodoro" class="view-section hidden-section flex flex-col items-center justify-center px-6 pt-20">
+        <button onclick="showView('view-landing')" class="absolute top-10 left-10 flex items-center gap-2 text-slate-500 hover:text-white transition-colors font-bold">
+            <i data-lucide="arrow-left"></i> BACK
+        </button>
+
+        <div class="w-full max-w-2xl text-center space-y-12">
+            <!-- Setup Phase -->
+            <div id="pomodoro-setup" class="space-y-8 animate-in">
+                <h2 class="text-5xl font-black text-white tracking-tighter uppercase">Deep Focus</h2>
+                
+                <div class="glass p-8 rounded-[2.5rem] space-y-6">
+                    <div class="relative group">
+                        <label class="block text-slate-500 text-xs font-bold uppercase tracking-widest mb-2 text-left px-4">Subject / Task</label>
+                        <div class="relative">
+                            <input type="text" id="pomo-task-name" placeholder="What are you working on?" 
+                                class="w-full bg-black border border-white/10 rounded-2xl px-6 py-5 text-xl text-white focus:outline-none focus:border-white/30 transition-all pr-14">
+                            <button onclick="document.getElementById('pomo-task-name').value=''" class="absolute right-4 top-1/2 -translate-y-1/2 text-slate-600 hover:text-white transition-colors">
+                                <i data-lucide="x-circle" class="w-6 h-6"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-4">
+                        <div class="text-left">
+                            <label class="block text-slate-500 text-xs font-bold uppercase tracking-widest mb-2 px-4">Focus (Min)</label>
+                            <input type="number" id="pomo-focus-min" value="25" class="w-full bg-black border border-white/10 rounded-2xl px-6 py-4 text-white focus:outline-none focus:border-white/30">
+                        </div>
+                        <div class="text-left">
+                            <label class="block text-slate-500 text-xs font-bold uppercase tracking-widest mb-2 px-4">Break (Min)</label>
+                            <input type="number" id="pomo-break-min" value="5" class="w-full bg-black border border-white/10 rounded-2xl px-6 py-4 text-white focus:outline-none focus:border-white/30">
+                        </div>
+                    </div>
+
+                    <button onclick="startPomodoro()" class="w-full py-5 bg-white text-black font-black rounded-2xl hover:bg-slate-200 transition-all text-xl uppercase tracking-widest">
+                        Start Session
+                    </button>
+                </div>
+            </div>
+
+            <!-- Active Phase -->
+            <div id="pomodoro-active" class="hidden space-y-10 animate-in">
+                <div class="space-y-2">
+                    <p id="pomo-active-task" class="text-2xl font-bold text-white tracking-tight"></p>
+                    <p id="pomo-status-label" class="text-slate-500 font-bold uppercase tracking-widest text-sm">Focus Mode</p>
+                </div>
+
+                <div class="relative flex items-center justify-center">
+                    <svg class="timer-svg w-64 h-64">
+                        <circle cx="128" cy="128" r="120" stroke="rgba(255,255,255,0.05)" stroke-width="8" fill="none" />
+                        <circle id="timer-progress" cx="128" cy="128" r="120" stroke="white" stroke-width="8" fill="none" class="timer-circle" />
+                    </svg>
+                    <div id="timer-display" class="absolute text-6xl font-black text-white">25:00</div>
+                </div>
+
+                <div class="flex flex-col gap-4">
+                    <button id="pomo-control-btn" onclick="toggleTimer()" class="px-12 py-5 border border-white/10 text-white font-bold rounded-2xl hover:bg-white/5 transition-all uppercase tracking-widest">
+                        Pause
+                    </button>
+                    <button onclick="resetPomodoro()" class="text-slate-600 hover:text-white transition-colors font-bold uppercase text-xs tracking-widest">
+                        Cancel Session
+                    </button>
+                </div>
+            </div>
+
+            <!-- Transition / Session 2 Phase -->
+            <div id="pomodoro-next" class="hidden space-y-8 animate-in">
+                <div class="w-24 h-24 bg-white/10 rounded-full flex items-center justify-center mx-auto mb-6">
+                    <i data-lucide="check" class="w-12 h-12 text-white"></i>
+                </div>
+                <h3 class="text-4xl font-black text-white">Great Work!</h3>
+                <p class="text-slate-500 font-medium">Break finished. Ready for the next one?</p>
+                <button onclick="startNextSession()" class="px-12 py-5 bg-white text-black font-black rounded-2xl hover:bg-slate-200 transition-all uppercase tracking-widest">
+                    Start Session Two
+                </button>
+                <button onclick="resetPomodoro()" class="block w-full text-slate-600 hover:text-white transition-colors font-bold uppercase text-xs tracking-widest">
+                    Finish for now
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const data = {
+            Math: [{ name: "Three-Dimensional Geometry", p: "A" }, { name: "Sequences and Series", p: "A" }, { name: "Matrices & Determinants", p: "A" }, { name: "Vector Algebra", p: "A" }, { name: "Definite Integration", p: "A" }, { name: "Functions", p: "A" }, { name: "Binomial Theorem", p: "A" }, { name: "Differential Equations", p: "A" }, { name: "Probability", p: "B" }, { name: "Permutation & Combination", p: "B" }, { name: "Straight Lines", p: "B" }, { name: "Area Under Curves", p: "B" }, { name: "Complex Numbers", p: "B" }, { name: "Application of Derivatives", p: "B" }, { name: "Sets and Relations", p: "B" }, { name: "Quadratic Equation", p: "B" }, { name: "Circle", p: "C" }, { name: "Statistics", p: "C" }, { name: "Limits", p: "C" }, { name: "Parabola", p: "C" }, { name: "Hyperbola", p: "C" }, { name: "Continuity & Differentiability", p: "C" }, { name: "Ellipse", p: "C" }, { name: "Inverse Trig Functions", p: "D" }, { name: "Indefinite Integration", p: "D" }, { name: "Trigonometric Equations", p: "D" }, { name: "Differentiation", p: "D" }, { name: "Trig Ratios & Identities", p: "D" }, { name: "Basics of Mathematics", p: "D" }],
+            Physics: [{ name: "Current Electricity", p: "A" }, { name: "Electrostatics", p: "A" }, { name: "Ray Optics", p: "A" }, { name: "Magnetic Effects of Current", p: "A" }, { name: "Thermodynamics", p: "A" }, { name: "Dual Nature of Matter", p: "A" }, { name: "Atomic Physics", p: "A" }, { name: "Rotational Motion", p: "B" }, { name: "Gravitation", p: "B" }, { name: "Properties of Fluids", p: "B" }, { name: "Semiconductors", p: "B" }, { name: "Work Power Energy", p: "B" }, { name: "Units and Dimensions", p: "B" }, { name: "Wave Optics", p: "B" }, { name: "Laws of Motion", p: "B" }, { name: "Motion In One Dimension", p: "B" }, { name: "Alternating Current", p: "C" }, { name: "Capacitance", p: "C" }, { name: "Electromagnetic Induction", p: "C" }, { name: "Nuclear Physics", p: "C" }, { name: "Kinetic Theory of Gases", p: "C" }, { name: "Oscillations", p: "C" }, { name: "Electromagnetic Waves", p: "C" }, { name: "Motion In Two Dimensions", p: "D" }, { name: "Properties of Solids", p: "D" }, { name: "Waves and Sound", p: "D" }, { name: "Mathematics in Physics", p: "D" }, { name: "Center of Mass", p: "D" }, { name: "Thermal Properties", p: "D" }, { name: "Magnetic Properties", p: "D" }, { name: "Experimental Physics", p: "D" }],
+            Chemistry: [{ name: "General Organic Chemistry", p: "A" }, { name: "Coordination Compounds", p: "A" }, { name: "Chemical Bonding", p: "A" }, { name: "d and f Block Elements", p: "A" }, { name: "Thermodynamics (Chem)", p: "A" }, { name: "Electrochemistry", p: "A" }, { name: "Structure of Atom", p: "B" }, { name: "Solutions", p: "B" }, { name: "Hydrocarbons", p: "B" }, { name: "Amines", p: "B" }, { name: "p-Block Elements", p: "B" }, { name: "Chemical Kinetics", p: "B" }, { name: "Biomolecules", p: "B" }, { name: "Mole Concept", p: "C" }, { name: "Aldehydes and Ketones", p: "C" }, { name: "Periodic Table", p: "C" }, { name: "Haloalkanes & Haloarenes", p: "C" }, { name: "Alcohols Phenols Ethers", p: "C" }, { name: "Ionic Equilibrium", p: "D" }, { name: "Redox Reactions", p: "D" }, { name: "Chemical Equilibrium", p: "D" }, { name: "Practical Chemistry", p: "D" }, { name: "Carboxylic Acid Derivatives", p: "D" }]
+        };
+
+        let currentTab = 'Math';
+        let activeSubject = null;
+        let userData = JSON.parse(localStorage.getItem('jee_2026_data')) || {};
+        let goalsData = JSON.parse(localStorage.getItem('jee_2026_goals')) || { math: [], physics: [], chemistry: [] };
+
+        // Pomodoro State
+        let timerInterval = null;
+        let timeLeft = 0;
+        let isFocusMode = true;
+        let isPaused = false;
+        let totalTimeSet = 0;
+
+        function showView(viewId) {
+            document.querySelectorAll('.view-section').forEach(v => v.classList.add('hidden-section'));
+            const view = document.getElementById(viewId);
+            if (view) {
+                view.classList.remove('hidden-section');
+                lucide.createIcons();
+                if(viewId === 'view-tracker') renderTable();
+            }
+        }
+
+        // Tracker & Goals Logic
+        function openSubjectGoals(subject) {
+            activeSubject = subject;
+            document.getElementById('current-subject-title').innerText = subject;
+            showView('view-subject-goals');
+            renderGoals();
+        }
+
+        document.getElementById('goal-input')?.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter' && e.target.value.trim()) {
+                goalsData[activeSubject].push({ id: Date.now(), text: e.target.value.trim(), completed: false });
+                e.target.value = '';
+                saveGoals(); renderGoals();
+            }
+        });
+
+        function renderGoals() {
+            const list = document.getElementById('subject-goals-list');
+            if (!list) return;
+            list.innerHTML = '';
+            goalsData[activeSubject].forEach((goal, idx) => {
+                const div = document.createElement('div');
+                div.className = 'flex items-center justify-between bg-white/[0.02] p-4 rounded-2xl border border-white/5 animate-in';
+                div.style.animationDelay = `${idx * 0.05}s`;
+                div.innerHTML = `
+                    <div class="flex items-center gap-4">
+                        <input type="checkbox" ${goal.completed ? 'checked' : ''} onchange="toggleGoal(${goal.id})" class="custom-checkbox">
+                        <span class="goal-text font-medium ${goal.completed ? 'completed' : 'text-slate-200'}">${goal.text}</span>
+                    </div>
+                    <button onclick="deleteGoal(${goal.id})" class="group flex items-center justify-center w-8 h-8 rounded-full hover:bg-white/10 transition-all">
+                        <i data-lucide="x" class="w-4 h-4 text-slate-500 group-hover:text-white"></i>
+                    </button>`;
+                list.appendChild(div);
+            });
+            lucide.createIcons();
+        }
+
+        function toggleGoal(id) {
+            const goal = goalsData[activeSubject].find(g => g.id === id);
+            if (goal) { goal.completed = !goal.completed; saveGoals(); renderGoals(); }
+        }
+
+        function deleteGoal(id) {
+            goalsData[activeSubject] = goalsData[activeSubject].filter(g => g.id !== id);
+            saveGoals(); renderGoals();
+        }
+
+        function saveGoals() { localStorage.setItem('jee_2026_goals', JSON.stringify(goalsData)); }
+
+        function switchTab(tab) {
+            currentTab = tab;
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById(`tab-${tab}`).classList.add('active');
+            renderTable();
+        }
+
+        function renderTable() {
+            const tbody = document.getElementById('tracker-body');
+            tbody.innerHTML = '';
+            const cols = ['theory', '2025', '2024', '2023', '2022', 'booster'];
+            data[currentTab].forEach((ch, i) => {
+                const tr = document.createElement('tr');
+                tr.className = 'border-b border-white/5 hover:bg-white/[0.02] transition-colors';
+                tr.innerHTML = `<td class="p-6"><div class="flex items-center gap-3">
+                    <span class="text-[9px] font-black px-2 py-0.5 rounded priority-badge-${ch.p}">P-${ch.p}</span>
+                    <span class="font-bold text-slate-200">${ch.name}</span></div></td>
+                    ${cols.map(c => `<td class="p-6 text-center">
+                        <input type="checkbox" class="custom-checkbox" ${userData[`${currentTab}-${i}-${c}`] ? 'checked' : ''} 
+                        onchange="toggleTask('${currentTab}', ${i}, '${c}')"></td>`).join('')}`;
+                tbody.appendChild(tr);
+            });
+            updateProgress();
+        }
+
+        function toggleTask(sub, idx, col) {
+            userData[`${sub}-${idx}-${col}`] = !userData[`${sub}-${idx}-${col}`];
+            localStorage.setItem('jee_2026_data', JSON.stringify(userData));
+            updateProgress();
+            showToast("Progress Saved!");
+        }
+
+        function updateProgress() {
+            let total = 0, done = 0;
+            Object.keys(data).forEach(s => data[s].forEach((_, i) => ['theory', '2025', '2024', '2023', '2022', 'booster'].forEach(c => {
+                total++; if(userData[`${s}-${i}-${c}`]) done++;
+            })));
+            const perc = document.getElementById('overall-percentage');
+            if (perc) perc.innerHTML = Math.round((done/total)*100) + "%";
+        }
+
+        // Pomodoro Logic
+        function startPomodoro() {
+            const task = document.getElementById('pomo-task-name').value || "Deep Work Session";
+            const focus = parseInt(document.getElementById('pomo-focus-min').value) * 60;
+            
+            if (!focus) return;
+
+            document.getElementById('pomo-active-task').innerText = task;
+            document.getElementById('pomodoro-setup').classList.add('hidden');
+            document.getElementById('pomodoro-active').classList.remove('hidden');
+            
+            isFocusMode = true;
+            timeLeft = focus;
+            totalTimeSet = focus;
+            updateTimerDisplay();
+            runTimer();
+        }
+
+        function runTimer() {
+            clearInterval(timerInterval);
+            timerInterval = setInterval(() => {
+                if (!isPaused) {
+                    timeLeft--;
+                    updateTimerDisplay();
+                    if (timeLeft <= 0) {
+                        clearInterval(timerInterval);
+                        handleTimerEnd();
+                    }
+                }
+            }, 1000);
+        }
+
+        function updateTimerDisplay() {
+            const min = Math.floor(timeLeft / 60);
+            const sec = timeLeft % 60;
+            document.getElementById('timer-display').innerText = `${min.toString().padStart(2, '0')}:${sec.toString().padStart(2, '0')}`;
+            
+            const circle = document.getElementById('timer-progress');
+            const offset = (timeLeft / totalTimeSet) * 283;
+            circle.style.strokeDashoffset = 283 - offset;
+        }
+
+        function handleTimerEnd() {
+            if (isFocusMode) {
+                // Focus ended, start break
+                showToast("Focus complete! Break time.");
+                isFocusMode = false;
+                document.getElementById('pomo-status-label').innerText = "Break Time";
+                document.getElementById('pomo-status-label').classList.add('text-green-500');
+                
+                const breakTime = parseInt(document.getElementById('pomo-break-min').value) * 60;
+                timeLeft = breakTime;
+                totalTimeSet = breakTime;
+                runTimer();
+            } else {
+                // Break ended
+                document.getElementById('pomodoro-active').classList.add('hidden');
+                document.getElementById('pomodoro-next').classList.remove('hidden');
+            }
+        }
+
+        function toggleTimer() {
+            isPaused = !isPaused;
+            document.getElementById('pomo-control-btn').innerText = isPaused ? "Resume" : "Pause";
+        }
+
+        function resetPomodoro() {
+            clearInterval(timerInterval);
+            document.getElementById('pomodoro-setup').classList.remove('hidden');
+            document.getElementById('pomodoro-active').classList.add('hidden');
+            document.getElementById('pomodoro-next').classList.add('hidden');
+            document.getElementById('pomo-status-label').innerText = "Focus Mode";
+            document.getElementById('pomo-status-label').classList.remove('text-green-500');
+            isPaused = false;
+            document.getElementById('pomo-control-btn').innerText = "Pause";
+        }
+
+        function startNextSession() {
+            document.getElementById('pomodoro-next').classList.add('hidden');
+            startPomodoro();
+        }
+
+        function showToast(m) {
+            const t = document.getElementById("toast");
+            t.innerText = m; t.classList.add("show");
+            setTimeout(() => t.classList.remove("show"), 2500);
+        }
+
+        window.onload = () => {
+            lucide.createIcons();
+            renderTable();
+        };
+    </script>
+</body>
+</html>

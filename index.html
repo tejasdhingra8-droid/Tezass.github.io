@@ -3,19 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>JEE Tracker | 2026 Mastery</title>
+    <title>JEE Tracker Pro | 2026 Mastery</title>
     
     <link rel="icon" type="image/jpeg" href="logo.jpeg">
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/lucide/0.263.1/lucide.min.js"></script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap');
         
         :root {
             --primary-accent: #ffffff;
-            --bg-dark: #000000;
-            --glass-bg: rgba(10, 10, 10, 0.8);
-            --transition-speed: 0.4s;
+            --bg-dark: #020202;
+            --glass-bg: rgba(15, 15, 15, 0.7);
+            --transition-speed: 0.6s;
             --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
         }
 
@@ -28,9 +28,11 @@
             scroll-behavior: smooth;
         }
 
+        /* Advanced View Transitions */
         .view-section {
             transition: opacity var(--transition-speed) var(--ease-out-expo), 
                         transform var(--transition-speed) var(--ease-out-expo),
+                        filter var(--transition-speed) var(--ease-out-expo),
                         visibility var(--transition-speed);
             position: absolute;
             width: 100%;
@@ -38,499 +40,731 @@
             top: 0;
             left: 0;
             opacity: 1;
-            transform: scale(1);
+            transform: scale(1) translateY(0);
             visibility: visible;
+            filter: blur(0px);
+            display: flex;
+            flex-direction: column;
         }
 
         .hidden-section {
             opacity: 0;
-            transform: scale(0.98);
+            transform: scale(1.05) translateY(-20px);
             visibility: hidden;
             pointer-events: none;
+            filter: blur(10px);
         }
 
-        .animate-in {
-            animation: slideUp 0.6s var(--ease-out-expo) forwards;
+        /* Staggered Animations */
+        .animate-up {
+            animation: slideUp 0.8s var(--ease-out-expo) forwards;
             opacity: 0;
+            transform: translateY(30px);
         }
 
         @keyframes slideUp {
-            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* New Staggered Row Animation for Tracker */
+        .tracker-row-animate {
+            opacity: 0;
+            transform: translateY(15px);
+            animation: rowIn 0.5s var(--ease-out-expo) forwards;
+        }
+
+        @keyframes rowIn {
             to { opacity: 1; transform: translateY(0); }
         }
 
         .glass {
             background: var(--glass-bg);
-            backdrop-filter: blur(20px);
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+            backdrop-filter: blur(24px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            transition: all 0.4s var(--ease-out-expo);
         }
 
         .glass:hover {
             border-color: rgba(255, 255, 255, 0.2);
-            box-shadow: 0 0 30px rgba(255, 255, 255, 0.05);
+            background: rgba(20, 20, 20, 0.8);
+            transform: translateY(-4px);
         }
 
+        /* Custom Checkbox */
         .custom-checkbox {
             appearance: none;
-            width: 1.4rem;
-            height: 1.4rem;
-            border: 2px solid #334155;
-            border-radius: 6px;
+            width: 1.5rem;
+            height: 1.5rem;
+            border: 2px solid rgba(255,255,255,0.1);
+            border-radius: 8px;
             cursor: pointer;
-            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: all 0.3s var(--ease-out-expo);
             position: relative;
+            background: rgba(255,255,255,0.03);
         }
 
         .custom-checkbox:checked {
             background-color: white;
             border-color: white;
+            transform: scale(1.1);
         }
 
         .custom-checkbox:checked::after {
             content: '✓';
             position: absolute;
             color: black;
-            font-size: 0.9rem;
-            font-weight: bold;
+            font-size: 1rem;
+            font-weight: 800;
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
         }
 
-        .tab-btn {
-            transition: all 0.3s var(--ease-out-expo);
-            color: #64748b;
+        /* Pomodoro Specifics */
+        .timer-ring-container {
+            position: relative;
+            width: 300px;
+            height: 300px;
         }
 
-        .tab-btn.active {
-            background: rgba(255, 255, 255, 0.1);
-            color: white;
+        .timer-svg {
+            transform: rotate(-90deg);
+            width: 100%;
+            height: 100%;
         }
 
-        .priority-badge-A { background: #333; color: #fff; border: 1px solid #555; }
-        .priority-badge-B { background: #222; color: #ccc; border: 1px solid #444; }
-        .priority-badge-C { background: #111; color: #aaa; border: 1px solid #333; }
-        .priority-badge-D { background: #000; color: #888; border: 1px solid #222; }
-
-        #toast {
-            visibility: hidden;
-            min-width: 250px;
-            background-color: #ffffff;
-            color: #000;
-            text-align: center;
-            border-radius: 12px;
-            padding: 16px;
-            position: fixed;
-            z-index: 1000;
-            left: 50%;
-            bottom: 30px;
-            transform: translateX(-50%);
-            box-shadow: 0 10px 40px rgba(0,0,0,0.8);
-            font-weight: bold;
+        .timer-circle-bg {
+            fill: none;
+            stroke: rgba(255, 255, 255, 0.05);
+            stroke-width: 8;
         }
 
-        #toast.show { visibility: visible; animation: fadein 0.5s var(--ease-out-expo), fadeout 0.5s 2.5s forwards; }
-        
-        @keyframes fadein { from {bottom: 0; opacity: 0;} to {bottom: 30px; opacity: 1;} }
-        @keyframes fadeout { from {bottom: 30px; opacity: 1;} to {bottom: 0; opacity: 0;} }
-
-        /* Timer Circle Animation */
-        .timer-svg { transform: rotate(-90deg); }
-        .timer-circle {
-            transition: stroke-dashoffset 1s linear;
-            stroke-dasharray: 283;
+        .timer-circle-progress {
+            fill: none;
+            stroke: white;
+            stroke-width: 8;
+            stroke-linecap: round;
+            stroke-dasharray: 880; /* approx 2 * pi * 140 */
             stroke-dashoffset: 0;
+            transition: stroke-dashoffset 1s linear;
+        }
+
+        .mini-list::-webkit-scrollbar { width: 3px; }
+        .mini-list::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 10px; }
+
+        .btn-primary {
+            background: white;
+            color: black;
+            font-weight: 800;
+            transition: all 0.3s var(--ease-out-expo);
+        }
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(255,255,255,0.2);
+        }
+
+        /* Tab Transition */
+        .tab-btn {
+            position: relative;
+            transition: color 0.3s ease;
+        }
+        .tab-btn.active::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 4px;
+            height: 4px;
+            background: white;
+            border-radius: 50%;
+        }
+
+        /* Footer Style */
+        .page-footer {
+            margin-top: auto;
+            padding: 2rem 0;
+            text-align: center;
+            opacity: 0.4;
+            transition: opacity 0.3s ease;
+        }
+        .page-footer:hover {
+            opacity: 1;
         }
     </style>
 </head>
-<body class="bg-black flex flex-col min-h-screen">
+<body class="bg-black">
 
-    <div id="toast">Saved!</div>
+    <!-- Toast system -->
+    <div id="toast-container" class="fixed bottom-10 left-1/2 -translate-x-1/2 z-[100] flex flex-col gap-2"></div>
 
     <!-- 1. LANDING PAGE -->
-    <div id="view-landing" class="view-section flex flex-col items-center justify-center text-center px-6">
-        <div class="absolute inset-0 opacity-10 pointer-events-none" style="background-image: radial-gradient(#ffffff 1px, transparent 1px); background-size: 30px 30px;"></div>
+    <div id="view-landing" class="view-section items-center justify-center text-center px-6">
+        <div class="absolute inset-0 opacity-20 pointer-events-none" 
+             style="background-image: radial-gradient(circle at 50% 50%, #1a1a1a 0%, transparent 80%);"></div>
         
-        <div class="relative z-10">
-            <div class="mb-8 w-32 h-32 mx-auto rounded-3xl bg-white/5 border border-white/10 flex items-center justify-center shadow-2xl overflow-hidden animate-in" style="animation-delay: 0.1s">
-                <img src="logo.jpeg" alt="Logo" class="w-full h-full object-cover grayscale brightness-110" onerror="this.style.display='none'; document.getElementById('logo-fallback-landing').classList.remove('hidden');">
-                <div id="logo-fallback-landing" class="hidden"><i data-lucide="graduation-cap" class="w-16 h-16 text-white"></i></div>
+        <div class="relative z-10 space-y-8 flex-grow flex flex-col items-center justify-center">
+            <div class="mb-4 w-40 h-40 mx-auto rounded-[2.5rem] bg-white/5 border border-white/10 p-1 shadow-2xl animate-up">
+                <div class="w-full h-full rounded-[2.3rem] overflow-hidden flex items-center justify-center bg-zinc-900">
+                    <img src="logo.jpeg" alt="Logo" class="w-full h-full object-cover grayscale opacity-80" onerror="this.style.display='none'; document.getElementById('logo-fallback-landing').classList.remove('hidden');">
+                    <div id="logo-fallback-landing" class="hidden"><i data-lucide="shield" class="w-16 h-16 text-white"></i></div>
+                </div>
             </div>
-            <h1 class="text-6xl md:text-8xl font-black tracking-tighter mb-4 text-white animate-in" style="animation-delay: 0.2s">JEE <span class="text-slate-500">TRACKER</span></h1>
-            <p class="text-slate-500 text-lg mb-10 font-medium animate-in" style="animation-delay: 0.3s">Your Daily Roadmap to JEE 2026 Mastery</p>
             
-            <div class="flex flex-col sm:flex-row gap-4 justify-center animate-in" style="animation-delay: 0.4s">
-                <button onclick="showView('view-tracker')" class="px-10 py-5 bg-white text-black hover:bg-slate-200 rounded-2xl font-bold transition-all transform hover:scale-105 shadow-xl flex items-center justify-center gap-3">
-                    <i data-lucide="layout-list"></i> TRACKER
+            <div class="space-y-2">
+                <h1 class="text-7xl md:text-9xl font-black tracking-tighter text-white animate-up" style="animation-delay: 0.1s">
+                    JEE <span class="text-zinc-600">PRO</span>
+                </h1>
+                <p class="text-zinc-500 text-xl font-medium animate-up" style="animation-delay: 0.2s">2026 Strategic Command Center</p>
+            </div>
+            
+            <div class="flex flex-wrap gap-4 justify-center animate-up" style="animation-delay: 0.3s">
+                <button onclick="showView('view-tracker')" class="btn-primary px-12 py-5 rounded-2xl flex items-center gap-3">
+                    <i data-lucide="bar-chart-3"></i> TRACKER
                 </button>
-                <button onclick="showView('view-goals-menu')" class="px-10 py-5 bg-zinc-900 border border-white/10 hover:bg-zinc-800 text-white rounded-2xl font-bold transition-all transform hover:scale-105 shadow-xl flex items-center justify-center gap-3">
-                    <i data-lucide="calendar-check"></i> GOALS
+                <button onclick="showView('view-goals-menu')" class="glass px-12 py-5 rounded-2xl flex items-center gap-3 font-bold">
+                    <i data-lucide="target"></i> MISSION
                 </button>
-                <button onclick="showView('view-pomodoro')" class="px-10 py-5 bg-zinc-900 border border-white/10 hover:bg-zinc-800 text-white rounded-2xl font-bold transition-all transform hover:scale-105 shadow-xl flex items-center justify-center gap-3">
-                    <i data-lucide="timer"></i> POMODORO
+                <button onclick="showView('view-pomodoro')" class="glass px-12 py-5 rounded-2xl flex items-center gap-3 font-bold">
+                    <i data-lucide="flame"></i> FOCUS
                 </button>
             </div>
         </div>
+
+        <footer class="page-footer">
+            <p class="text-[10px] font-black tracking-[0.4em] uppercase text-white/60">Designed by Tejas Dhingra</p>
+        </footer>
     </div>
 
     <!-- 2. GOALS MENU -->
-    <div id="view-goals-menu" class="view-section hidden-section flex flex-col items-center justify-center px-6">
-        <button onclick="showView('view-landing')" class="absolute top-10 left-10 flex items-center gap-2 text-slate-500 hover:text-white transition-colors font-bold">
-            <i data-lucide="arrow-left"></i> BACK
+    <div id="view-goals-menu" class="view-section hidden-section items-center pt-24 px-6 overflow-y-auto">
+        <button onclick="showView('view-landing')" class="absolute top-10 left-10 flex items-center gap-2 text-zinc-500 hover:text-white transition-colors font-bold uppercase text-xs tracking-widest">
+            <i data-lucide="chevron-left" class="w-4 h-4"></i> Escape
         </button>
-        <h2 class="text-4xl font-black text-white mb-12">Select Subject</h2>
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 w-full max-w-5xl">
-            <button onclick="openSubjectGoals('math')" class="glass p-12 rounded-3xl group transition-all flex flex-col items-center animate-in" style="animation-delay: 0.1s">
-                <h3 class="text-3xl font-bold text-white tracking-widest group-hover:text-slate-300 transition-colors uppercase">Maths</h3>
-            </button>
-            <button onclick="openSubjectGoals('physics')" class="glass p-12 rounded-3xl group transition-all flex flex-col items-center animate-in" style="animation-delay: 0.2s">
-                <h3 class="text-3xl font-bold text-white tracking-widest group-hover:text-slate-300 transition-colors uppercase">Physics</h3>
-            </button>
-            <button onclick="openSubjectGoals('chemistry')" class="glass p-12 rounded-3xl group transition-all flex flex-col items-center animate-in" style="animation-delay: 0.3s">
-                <h3 class="text-3xl font-bold text-white tracking-widest group-hover:text-slate-300 transition-colors uppercase">Chemistry</h3>
-            </button>
+        
+        <div class="max-w-6xl w-full flex-grow">
+            <div class="mb-16 flex justify-between items-end">
+                <div>
+                    <h2 class="text-5xl font-black text-white tracking-tighter">DAILY MISSIONS</h2>
+                    <div class="h-1 w-20 bg-white mt-4"></div>
+                </div>
+                <p class="text-zinc-500 font-bold text-xs tracking-[0.3em] pb-1">COMMAND CENTER</p>
+            </div>
+            
+            <div id="goals-menu-container" class="grid grid-cols-1 md:grid-cols-3 gap-8 w-full mb-20">
+                <!-- Cards injected here -->
+            </div>
         </div>
+
+        <footer class="page-footer pb-10">
+            <p class="text-[10px] font-black tracking-[0.4em] uppercase text-white/60">Designed by Tejas Dhingra</p>
+        </footer>
     </div>
 
     <!-- 3. SUBJECT GOALS EDITOR -->
-    <div id="view-subject-goals" class="view-section hidden-section flex flex-col items-center pt-32 px-6">
-        <button onclick="showView('view-goals-menu')" class="absolute top-10 left-10 flex items-center gap-2 text-slate-500 hover:text-white transition-colors font-bold">
-            <i data-lucide="arrow-left"></i> BACK
+    <div id="view-subject-goals" class="view-section hidden-section items-center pt-32 px-6">
+        <button onclick="showView('view-goals-menu')" class="absolute top-10 left-10 flex items-center gap-2 text-zinc-500 hover:text-white font-bold uppercase text-xs tracking-widest">
+            <i data-lucide="chevron-left" class="w-4 h-4"></i> Back
         </button>
-        <div class="w-full max-w-3xl glass p-8 rounded-[2.5rem] animate-in">
-            <div class="mb-8">
-                <h2 id="current-subject-title" class="text-4xl font-black text-white uppercase tracking-tighter"></h2>
-                <p class="text-slate-600 text-sm font-bold">Daily Progress Tracker</p>
+        
+        <div class="w-full max-w-2xl flex-grow">
+            <div class="glass p-10 rounded-[3rem] animate-up mb-20">
+                <div class="mb-10">
+                    <div class="flex items-center gap-4 mb-2">
+                        <div id="subject-color-dot" class="w-3 h-3 rounded-full bg-white shadow-[0_0_10px_rgba(255,255,255,0.5)]"></div>
+                        <h2 id="current-subject-title" class="text-5xl font-black text-white uppercase tracking-tighter">Subject</h2>
+                    </div>
+                    <p class="text-zinc-500 text-sm font-bold tracking-widest uppercase">Target Checklist</p>
+                </div>
+                
+                <div class="relative mb-10 group">
+                    <input type="text" id="goal-input" placeholder="What's the goal?" 
+                        class="w-full bg-zinc-900/50 border border-white/10 rounded-2xl px-8 py-6 text-xl text-white focus:outline-none focus:border-white/40 transition-all shadow-2xl">
+                    <div class="absolute right-6 top-1/2 -translate-y-1/2 text-zinc-600 group-focus-within:text-white transition-colors">
+                        <i data-lucide="corner-down-left" class="w-6 h-6"></i>
+                    </div>
+                </div>
+                
+                <div id="subject-goals-list" class="space-y-4 max-h-[40vh] overflow-y-auto pr-2 mini-list"></div>
             </div>
-            <div class="relative mb-8">
-                <input type="text" id="goal-input" placeholder="Type a goal and press Enter..." 
-                    class="w-full bg-black border border-white/10 rounded-2xl px-6 py-5 text-lg text-white focus:outline-none focus:border-white/30 transition-all">
-            </div>
-            <div id="subject-goals-list" class="space-y-3"></div>
         </div>
+
+        <footer class="page-footer pb-10">
+            <p class="text-[10px] font-black tracking-[0.4em] uppercase text-white/60">Designed by Tejas Dhingra</p>
+        </footer>
     </div>
 
     <!-- 4. TRACKER -->
-    <div id="view-tracker" class="view-section hidden-section">
-        <nav class="sticky top-0 z-40 glass border-b border-white/5 px-4 py-4">
+    <div id="view-tracker" class="view-section hidden-section overflow-y-auto">
+        <nav class="sticky top-0 z-50 glass border-b border-white/5 px-8 py-6">
             <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-6">
-                <button onclick="showView('view-landing')" class="flex items-center gap-3 group">
-                    <div class="w-10 h-10 bg-zinc-900 border border-white/10 rounded-xl flex items-center justify-center group-hover:bg-zinc-800 transition-colors">
-                        <i data-lucide="home" class="w-5 h-5 text-white"></i>
-                    </div>
-                    <span class="text-xl font-bold tracking-tight text-white uppercase">JEE 2026</span>
+                <button onclick="showView('view-landing')" class="flex items-center gap-4">
+                    <div class="w-12 h-12 bg-white text-black rounded-2xl flex items-center justify-center font-black text-xl">J</div>
+                    <span class="text-2xl font-black tracking-tight text-white">TRACKER</span>
                 </button>
-                <div class="flex gap-1 p-1 bg-zinc-900 rounded-2xl border border-white/5">
-                    <button onclick="switchTab('Math')" id="tab-Math" class="tab-btn active px-6 py-2.5 rounded-xl text-sm font-bold">Math</button>
-                    <button onclick="switchTab('Physics')" id="tab-Physics" class="tab-btn px-6 py-2.5 rounded-xl text-sm font-bold">Physics</button>
-                    <button onclick="switchTab('Chemistry')" id="tab-Chemistry" class="tab-btn px-6 py-2.5 rounded-xl text-sm font-bold">Chem</button>
+                <div class="flex gap-2 p-1.5 bg-zinc-900/80 rounded-2xl border border-white/5">
+                    <button onclick="switchTab('Math')" id="tab-Math" class="tab-btn active px-8 py-3 rounded-xl text-sm font-black uppercase tracking-wider">Math</button>
+                    <button onclick="switchTab('Physics')" id="tab-Physics" class="tab-btn px-8 py-3 rounded-xl text-sm font-black uppercase tracking-wider">Physics</button>
+                    <button onclick="switchTab('Chemistry')" id="tab-Chemistry" class="tab-btn px-8 py-3 rounded-xl text-sm font-black uppercase tracking-wider">Chem</button>
                 </div>
-                <div class="bg-white/5 px-5 py-2 rounded-xl border border-white/10 text-white font-bold"><span id="overall-percentage">0%</span> Complete</div>
+                <div class="flex items-center gap-4">
+                    <div class="text-right">
+                        <p class="text-[10px] font-black text-zinc-500 uppercase tracking-widest">Total Mastery</p>
+                        <p id="overall-percentage" class="text-xl font-black text-white">0%</p>
+                    </div>
+                </div>
             </div>
         </nav>
-        <main class="max-w-7xl mx-auto px-4 mt-8 pb-10 animate-in">
-            <div class="glass rounded-[2rem] overflow-hidden"><div class="overflow-x-auto"><table class="w-full text-left">
-                <thead><tr class="bg-zinc-900/50 text-slate-500 text-[10px] uppercase tracking-widest border-b border-white/5">
-                    <th class="p-6">Chapter Name</th><th class="p-6 text-center">Theory</th><th class="p-6 text-center">2025</th><th class="p-6 text-center">2024</th><th class="p-6 text-center">2023</th><th class="p-6 text-center">2022</th><th class="p-6 text-center">Booster</th>
-                </tr></thead>
-                <tbody id="tracker-body"></tbody>
-            </table></div></div>
+        <main class="max-w-7xl mx-auto px-6 mt-12 flex-grow">
+            <div class="glass rounded-[3rem] overflow-hidden shadow-2xl mb-12">
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left">
+                        <thead>
+                            <tr class="bg-zinc-900/50 text-zinc-500 text-[11px] uppercase tracking-[0.2em] font-black border-b border-white/5">
+                                <th class="p-8">Chapter</th>
+                                <th class="p-8 text-center">Theory</th>
+                                <th class="p-8 text-center">2025</th>
+                                <th class="p-8 text-center">2024</th>
+                                <th class="p-8 text-center">2023</th>
+                                <th class="p-8 text-center">2022</th>
+                                <th class="p-8 text-center">Booster</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tracker-body" class="divide-y divide-white/5"></tbody>
+                    </table>
+                </div>
+            </div>
         </main>
+        
+        <footer class="page-footer pb-10">
+            <p class="text-[10px] font-black tracking-[0.4em] uppercase text-white/60">Designed by Tejas Dhingra</p>
+        </footer>
     </div>
 
-    <!-- 5. POMODORO PAGE -->
-    <div id="view-pomodoro" class="view-section hidden-section flex flex-col items-center justify-center px-6 pt-20">
-        <button onclick="showView('view-landing')" class="absolute top-10 left-10 flex items-center gap-2 text-slate-500 hover:text-white transition-colors font-bold">
-            <i data-lucide="arrow-left"></i> BACK
+    <!-- 5. ADVANCED POMODORO -->
+    <div id="view-pomodoro" class="view-section hidden-section items-center justify-center px-6">
+        <button onclick="showView('view-landing')" class="absolute top-10 left-10 flex items-center gap-2 text-zinc-500 hover:text-white transition-colors font-bold uppercase text-xs tracking-widest">
+            <i data-lucide="chevron-left" class="w-4 h-4"></i> Back
         </button>
 
-        <div class="w-full max-w-2xl text-center space-y-12">
-            <!-- Setup Phase -->
-            <div id="pomodoro-setup" class="space-y-8 animate-in">
-                <h2 class="text-5xl font-black text-white tracking-tighter uppercase">Deep Focus</h2>
+        <div class="flex-grow flex flex-col items-center justify-center w-full">
+            <!-- Setup State -->
+            <div id="pomo-setup" class="w-full max-w-md space-y-8 animate-up">
+                <div class="text-center space-y-2">
+                    <h2 class="text-6xl font-black text-white tracking-tighter uppercase">Focus</h2>
+                    <p class="text-zinc-500 font-medium">Define your mission, eliminate distractions.</p>
+                </div>
                 
-                <div class="glass p-8 rounded-[2.5rem] space-y-6">
-                    <div class="relative group">
-                        <label class="block text-slate-500 text-xs font-bold uppercase tracking-widest mb-2 text-left px-4">Subject / Task</label>
-                        <div class="relative">
-                            <input type="text" id="pomo-task-name" placeholder="What are you working on?" 
-                                class="w-full bg-black border border-white/10 rounded-2xl px-6 py-5 text-xl text-white focus:outline-none focus:border-white/30 transition-all pr-14">
-                            <button onclick="document.getElementById('pomo-task-name').value=''" class="absolute right-4 top-1/2 -translate-y-1/2 text-slate-600 hover:text-white transition-colors">
-                                <i data-lucide="x-circle" class="w-6 h-6"></i>
-                            </button>
-                        </div>
+                <div class="glass p-10 rounded-[3rem] space-y-8">
+                    <div class="space-y-2">
+                        <label class="text-[10px] font-black text-zinc-500 uppercase tracking-widest">Current Mission</label>
+                        <input type="text" id="pomo-task-input" placeholder="e.g., Solving Integration Pyqs" class="w-full bg-zinc-900 border border-white/10 rounded-2xl px-6 py-4 text-white focus:border-white/30 outline-none">
                     </div>
-
+                    
                     <div class="grid grid-cols-2 gap-4">
-                        <div class="text-left">
-                            <label class="block text-slate-500 text-xs font-bold uppercase tracking-widest mb-2 px-4">Focus (Min)</label>
-                            <input type="number" id="pomo-focus-min" value="25" class="w-full bg-black border border-white/10 rounded-2xl px-6 py-4 text-white focus:outline-none focus:border-white/30">
+                        <div class="space-y-2">
+                            <label class="text-[10px] font-black text-zinc-500 uppercase tracking-widest">Work (Min)</label>
+                            <input type="number" id="pomo-work-val" value="25" class="w-full bg-zinc-900 border border-white/10 rounded-2xl px-6 py-4 text-white outline-none">
                         </div>
-                        <div class="text-left">
-                            <label class="block text-slate-500 text-xs font-bold uppercase tracking-widest mb-2 px-4">Break (Min)</label>
-                            <input type="number" id="pomo-break-min" value="5" class="w-full bg-black border border-white/10 rounded-2xl px-6 py-4 text-white focus:outline-none focus:border-white/30">
+                        <div class="space-y-2">
+                            <label class="text-[10px] font-black text-zinc-500 uppercase tracking-widest">Break (Min)</label>
+                            <input type="number" id="pomo-break-val" value="5" class="w-full bg-zinc-900 border border-white/10 rounded-2xl px-6 py-4 text-white outline-none">
                         </div>
                     </div>
-
-                    <button onclick="startPomodoro()" class="w-full py-5 bg-white text-black font-black rounded-2xl hover:bg-slate-200 transition-all text-xl uppercase tracking-widest">
-                        Start Session
-                    </button>
+                    
+                    <button onclick="startAdvancedPomo()" class="btn-primary w-full py-6 rounded-2xl text-xl uppercase tracking-tighter">Initiate Focus</button>
                 </div>
             </div>
 
-            <!-- Active Phase -->
-            <div id="pomodoro-active" class="hidden space-y-10 animate-in">
+            <!-- Active State -->
+            <div id="pomo-active" class="hidden w-full max-w-2xl text-center space-y-12 animate-up">
                 <div class="space-y-2">
-                    <p id="pomo-active-task" class="text-2xl font-bold text-white tracking-tight"></p>
-                    <p id="pomo-status-label" class="text-slate-500 font-bold uppercase tracking-widest text-sm">Focus Mode</p>
+                    <h3 id="pomo-status-label" class="text-zinc-500 font-black uppercase tracking-[0.3em] text-sm">Deep Work</h3>
+                    <h2 id="pomo-task-display" class="text-3xl font-bold text-white tracking-tight italic">Mission Name</h2>
                 </div>
 
-                <div class="relative flex items-center justify-center">
-                    <svg class="timer-svg w-64 h-64">
-                        <circle cx="128" cy="128" r="120" stroke="rgba(255,255,255,0.05)" stroke-width="8" fill="none" />
-                        <circle id="timer-progress" cx="128" cy="128" r="120" stroke="white" stroke-width="8" fill="none" class="timer-circle" />
+                <div class="timer-ring-container mx-auto">
+                    <svg class="timer-svg" viewBox="0 0 300 300">
+                        <circle class="timer-circle-bg" cx="150" cy="150" r="140"></circle>
+                        <circle id="timer-progress-ring" class="timer-circle-progress" cx="150" cy="150" r="140"></circle>
                     </svg>
-                    <div id="timer-display" class="absolute text-6xl font-black text-white">25:00</div>
+                    <div class="absolute inset-0 flex items-center justify-center">
+                        <span id="pomo-timer-text" class="text-7xl font-black text-white tabular-nums">25:00</span>
+                    </div>
                 </div>
 
-                <div class="flex flex-col gap-4">
-                    <button id="pomo-control-btn" onclick="toggleTimer()" class="px-12 py-5 border border-white/10 text-white font-bold rounded-2xl hover:bg-white/5 transition-all uppercase tracking-widest">
-                        Pause
+                <div class="flex gap-4 justify-center">
+                    <button onclick="togglePomo()" id="pomo-play-btn" class="glass w-20 h-20 rounded-3xl flex items-center justify-center hover:bg-white hover:text-black transition-all">
+                        <i data-lucide="pause" id="pomo-icon" class="w-8 h-8"></i>
                     </button>
-                    <button onclick="resetPomodoro()" class="text-slate-600 hover:text-white transition-colors font-bold uppercase text-xs tracking-widest">
-                        Cancel Session
+                    <button onclick="resetAdvancedPomo()" class="glass w-20 h-20 rounded-3xl flex items-center justify-center hover:bg-red-500/20 hover:text-red-500 transition-all">
+                        <i data-lucide="x" class="w-8 h-8"></i>
                     </button>
                 </div>
-            </div>
-
-            <!-- Transition / Session 2 Phase -->
-            <div id="pomodoro-next" class="hidden space-y-8 animate-in">
-                <div class="w-24 h-24 bg-white/10 rounded-full flex items-center justify-center mx-auto mb-6">
-                    <i data-lucide="check" class="w-12 h-12 text-white"></i>
+                
+                <div id="pomo-session-stats" class="pt-8 text-zinc-600 font-bold uppercase text-[10px] tracking-widest">
+                    Session #1 • Total Focused: <span id="pomo-total-time" class="text-zinc-400">0m</span>
                 </div>
-                <h3 class="text-4xl font-black text-white">Great Work!</h3>
-                <p class="text-slate-500 font-medium">Break finished. Ready for the next one?</p>
-                <button onclick="startNextSession()" class="px-12 py-5 bg-white text-black font-black rounded-2xl hover:bg-slate-200 transition-all uppercase tracking-widest">
-                    Start Session Two
-                </button>
-                <button onclick="resetPomodoro()" class="block w-full text-slate-600 hover:text-white transition-colors font-bold uppercase text-xs tracking-widest">
-                    Finish for now
-                </button>
             </div>
         </div>
+
+        <footer class="page-footer">
+            <p class="text-[10px] font-black tracking-[0.4em] uppercase text-white/60">Designed by Tejas Dhingra</p>
+        </footer>
     </div>
 
     <script>
-        const data = {
+        // CORE DATA
+        const subjectData = {
             Math: [{ name: "Three-Dimensional Geometry", p: "A" }, { name: "Sequences and Series", p: "A" }, { name: "Matrices & Determinants", p: "A" }, { name: "Vector Algebra", p: "A" }, { name: "Definite Integration", p: "A" }, { name: "Functions", p: "A" }, { name: "Binomial Theorem", p: "A" }, { name: "Differential Equations", p: "A" }, { name: "Probability", p: "B" }, { name: "Permutation & Combination", p: "B" }, { name: "Straight Lines", p: "B" }, { name: "Area Under Curves", p: "B" }, { name: "Complex Numbers", p: "B" }, { name: "Application of Derivatives", p: "B" }, { name: "Sets and Relations", p: "B" }, { name: "Quadratic Equation", p: "B" }, { name: "Circle", p: "C" }, { name: "Statistics", p: "C" }, { name: "Limits", p: "C" }, { name: "Parabola", p: "C" }, { name: "Hyperbola", p: "C" }, { name: "Continuity & Differentiability", p: "C" }, { name: "Ellipse", p: "C" }, { name: "Inverse Trig Functions", p: "D" }, { name: "Indefinite Integration", p: "D" }, { name: "Trigonometric Equations", p: "D" }, { name: "Differentiation", p: "D" }, { name: "Trig Ratios & Identities", p: "D" }, { name: "Basics of Mathematics", p: "D" }],
             Physics: [{ name: "Current Electricity", p: "A" }, { name: "Electrostatics", p: "A" }, { name: "Ray Optics", p: "A" }, { name: "Magnetic Effects of Current", p: "A" }, { name: "Thermodynamics", p: "A" }, { name: "Dual Nature of Matter", p: "A" }, { name: "Atomic Physics", p: "A" }, { name: "Rotational Motion", p: "B" }, { name: "Gravitation", p: "B" }, { name: "Properties of Fluids", p: "B" }, { name: "Semiconductors", p: "B" }, { name: "Work Power Energy", p: "B" }, { name: "Units and Dimensions", p: "B" }, { name: "Wave Optics", p: "B" }, { name: "Laws of Motion", p: "B" }, { name: "Motion In One Dimension", p: "B" }, { name: "Alternating Current", p: "C" }, { name: "Capacitance", p: "C" }, { name: "Electromagnetic Induction", p: "C" }, { name: "Nuclear Physics", p: "C" }, { name: "Kinetic Theory of Gases", p: "C" }, { name: "Oscillations", p: "C" }, { name: "Electromagnetic Waves", p: "C" }, { name: "Motion In Two Dimensions", p: "D" }, { name: "Properties of Solids", p: "D" }, { name: "Waves and Sound", p: "D" }, { name: "Mathematics in Physics", p: "D" }, { name: "Center of Mass", p: "D" }, { name: "Thermal Properties", p: "D" }, { name: "Magnetic Properties", p: "D" }, { name: "Experimental Physics", p: "D" }],
             Chemistry: [{ name: "General Organic Chemistry", p: "A" }, { name: "Coordination Compounds", p: "A" }, { name: "Chemical Bonding", p: "A" }, { name: "d and f Block Elements", p: "A" }, { name: "Thermodynamics (Chem)", p: "A" }, { name: "Electrochemistry", p: "A" }, { name: "Structure of Atom", p: "B" }, { name: "Solutions", p: "B" }, { name: "Hydrocarbons", p: "B" }, { name: "Amines", p: "B" }, { name: "p-Block Elements", p: "B" }, { name: "Chemical Kinetics", p: "B" }, { name: "Biomolecules", p: "B" }, { name: "Mole Concept", p: "C" }, { name: "Aldehydes and Ketones", p: "C" }, { name: "Periodic Table", p: "C" }, { name: "Haloalkanes & Haloarenes", p: "C" }, { name: "Alcohols Phenols Ethers", p: "C" }, { name: "Ionic Equilibrium", p: "D" }, { name: "Redox Reactions", p: "D" }, { name: "Chemical Equilibrium", p: "D" }, { name: "Practical Chemistry", p: "D" }, { name: "Carboxylic Acid Derivatives", p: "D" }]
         };
 
+        // STATE MANAGEMENT
         let currentTab = 'Math';
         let activeSubject = null;
-        let userData = JSON.parse(localStorage.getItem('jee_2026_data')) || {};
-        let goalsData = JSON.parse(localStorage.getItem('jee_2026_goals')) || { math: [], physics: [], chemistry: [] };
-
-        // Pomodoro State
-        let timerInterval = null;
-        let timeLeft = 0;
-        let isFocusMode = true;
-        let isPaused = false;
-        let totalTimeSet = 0;
-
+        let userData = JSON.parse(localStorage.getItem('jee_pro_v2_data')) || {};
+        let goalsData = JSON.parse(localStorage.getItem('jee_pro_v2_goals')) || { math: [], physics: [], chemistry: [] };
+        
+        // VIEW NAVIGATION
         function showView(viewId) {
-            document.querySelectorAll('.view-section').forEach(v => v.classList.add('hidden-section'));
-            const view = document.getElementById(viewId);
-            if (view) {
-                view.classList.remove('hidden-section');
-                lucide.createIcons();
+            const sections = document.querySelectorAll('.view-section');
+            sections.forEach(v => v.classList.add('hidden-section'));
+            
+            const target = document.getElementById(viewId);
+            if (target) {
+                target.classList.remove('hidden-section');
                 if(viewId === 'view-tracker') renderTable();
+                if(viewId === 'view-goals-menu') renderGoalsMenu();
+                lucide.createIcons();
+            }
+        }
+        // CALENDAR LOGIC
+        function renderCalendar() {
+            const grid = document.getElementById('calendar-days-grid');
+            const monthLabel = document.getElementById('calendar-month-label');
+            grid.innerHTML = '';
+            
+            const year = calendarBaseDate.getFullYear();
+            const month = calendarBaseDate.getMonth();
+            const firstDayIndex = new Date(year, month, 1).getDay();
+            const daysInMonth = new Date(year, month + 1, 0).getDate();
+            const todayStr = new Date().toISOString().split('T')[0];
+            
+            monthLabel.innerText = new Intl.DateTimeFormat('en-US', { month: 'long', year: 'numeric' }).format(calendarBaseDate);
+
+            for (let i = 0; i < firstDayIndex; i++) {
+                grid.appendChild(Object.assign(document.createElement('div'), { className: 'calendar-day empty' }));
+            }
+
+            for (let d = 1; d <= daysInMonth; d++) {
+                const dayStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
+                const hasMissions = goalsData[dayStr] && (goalsData[dayStr].math?.length || goalsData[dayStr].physics?.length || goalsData[dayStr].chemistry?.length);
+                
+                const dayEl = document.createElement('div');
+                dayEl.className = `calendar-day ${dayStr === selectedDate ? 'active-day' : ''} ${hasMissions ? 'has-missions' : ''} ${dayStr === todayStr ? 'today' : ''}`;
+                dayEl.innerText = d;
+                dayEl.onclick = () => { selectedDate = dayStr; showView('view-goals-menu'); };
+                grid.appendChild(dayEl);
             }
         }
 
-        // Tracker & Goals Logic
+        function moveMonth(dir) {
+            calendarBaseDate.setMonth(calendarBaseDate.getMonth() + dir);
+            renderCalendar();
+        }
+
+        // GOALS LOGIC
+        function renderGoalsMenu() {
+            const container = document.getElementById('goals-menu-container');
+            container.innerHTML = '';
+            ['math', 'physics', 'chemistry'].forEach((sub, idx) => {
+                const list = goalsData[sub] || [];
+                const pendingCount = list.filter(g => !g.completed).length;
+                
+                const card = document.createElement('div');
+                card.className = 'glass p-8 rounded-[2.5rem] flex flex-col h-[480px] animate-up group';
+                card.style.animationDelay = `${idx * 0.1}s`;
+                
+                let previewHtml = '';
+                if (list.length === 0) {
+                   previewHtml = '<p class="text-zinc-700 italic text-sm py-10">No objectives for today.</p>';
+                } else {
+                   previewHtml = `<ul class="space-y-4 pr-2">` + list.slice(0, 6).map(g => `
+                        <li class="flex items-center justify-between group/item transition-all duration-300">
+                            <div class="flex items-start gap-3 text-sm font-semibold transition-all ${g.completed ? 'opacity-30 line-through' : 'text-zinc-300'}">
+                                <span class="mt-1.5 w-1.5 h-1.5 rounded-full ${g.completed ? 'bg-zinc-700' : 'bg-white shadow-[0_0_5px_white]'} shrink-0"></span>
+                                <span class="flex-grow">${g.text}</span>
+                            </div>
+                            <button onclick="event.stopPropagation(); deleteGoal('${sub}', ${g.id})" class="opacity-0 group-hover/item:opacity-100 p-1.5 rounded-lg hover:bg-red-500/10 text-zinc-600 hover:text-red-400 transition-all flex items-center justify-center">
+                                <i data-lucide="x" class="w-3.5 h-3.5"></i>
+                            </button>
+                        </li>`).join('') + (list.length > 6 ? `<li class="text-zinc-600 text-[10px] font-black uppercase mt-2">+ ${list.length - 6} more</li>` : '') + `</ul>`;
+                }
+
+                card.innerHTML = `
+                    <div class="flex justify-between items-start mb-8">
+                        <div>
+                            <h3 class="text-3xl font-black uppercase tracking-tighter text-white">${sub}</h3>
+                            <p id="count-${sub}" class="text-[10px] font-black text-zinc-500 uppercase tracking-widest mt-1">${pendingCount} Mission Units</p>
+                        </div>
+                        <div class="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-zinc-400 group-hover:bg-white group-hover:text-black transition-all">
+                             <i data-lucide="plus" class="w-5 h-5"></i>
+                        </div>
+                    </div>
+                    <div class="flex-grow overflow-y-auto mini-list mb-8">
+                        ${previewHtml}
+                    </div>
+                    <button onclick="openSubjectGoals('${sub}')" class="w-full py-5 bg-zinc-900 border border-white/5 rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] text-zinc-500 hover:bg-white hover:text-black transition-all">
+                        Deploy Objectives
+                    </button>
+                `;
+                container.appendChild(card);
+            });
+            lucide.createIcons();
+        }
+
         function openSubjectGoals(subject) {
             activeSubject = subject;
             document.getElementById('current-subject-title').innerText = subject;
+            const dot = document.getElementById('subject-color-dot');
+            dot.className = `w-3 h-3 rounded-full shadow-[0_0_15px_rgba(255,255,255,0.8)] ${
+                subject === 'math' ? 'bg-blue-400' : subject === 'physics' ? 'bg-red-400' : 'bg-green-400'
+            }`;
             showView('view-subject-goals');
-            renderGoals();
+            renderGoalsList();
+            setTimeout(() => document.getElementById('goal-input').focus(), 150);
         }
 
-        document.getElementById('goal-input')?.addEventListener('keypress', (e) => {
+        document.getElementById('goal-input').onkeypress = (e) => {
             if (e.key === 'Enter' && e.target.value.trim()) {
+                if(!goalsData[activeSubject]) goalsData[activeSubject] = [];
                 goalsData[activeSubject].push({ id: Date.now(), text: e.target.value.trim(), completed: false });
                 e.target.value = '';
-                saveGoals(); renderGoals();
+                saveGoals();
+                renderGoalsList();
+                showToast("Objective Logged");
             }
-        });
+        };
 
-        function renderGoals() {
-            const list = document.getElementById('subject-goals-list');
-            if (!list) return;
-            list.innerHTML = '';
-            goalsData[activeSubject].forEach((goal, idx) => {
+        function renderGoalsList() {
+            const listEl = document.getElementById('subject-goals-list');
+            listEl.innerHTML = '';
+            const items = goalsData[activeSubject] || [];
+            if(items.length === 0) {
+                listEl.innerHTML = '<div class="text-center py-10 text-zinc-700 italic">Grid is empty. Add a mission above.</div>';
+                return;
+            }
+            items.forEach((goal, i) => {
                 const div = document.createElement('div');
-                div.className = 'flex items-center justify-between bg-white/[0.02] p-4 rounded-2xl border border-white/5 animate-in';
-                div.style.animationDelay = `${idx * 0.05}s`;
+                div.className = 'flex items-center justify-between p-5 bg-zinc-900/50 rounded-2xl border border-white/5 hover:border-white/20 transition-all animate-up group/listitem';
+                div.style.animationDelay = `${i * 0.05}s`;
                 div.innerHTML = `
-                    <div class="flex items-center gap-4">
+                    <div class="flex items-center gap-5">
                         <input type="checkbox" ${goal.completed ? 'checked' : ''} onchange="toggleGoal(${goal.id})" class="custom-checkbox">
-                        <span class="goal-text font-medium ${goal.completed ? 'completed' : 'text-slate-200'}">${goal.text}</span>
+                        <span class="text-lg font-medium tracking-tight ${goal.completed ? 'line-through opacity-30' : 'text-zinc-200'}">${goal.text}</span>
                     </div>
-                    <button onclick="deleteGoal(${goal.id})" class="group flex items-center justify-center w-8 h-8 rounded-full hover:bg-white/10 transition-all">
-                        <i data-lucide="x" class="w-4 h-4 text-slate-500 group-hover:text-white"></i>
-                    </button>`;
-                list.appendChild(div);
+                    <button onclick="deleteGoal('${activeSubject}', ${goal.id}); renderGoalsList();" class="text-zinc-600 hover:text-red-400 transition-colors p-2 rounded-xl hover:bg-red-500/10">
+                        <i data-lucide="x" class="w-5 h-5"></i>
+                    </button>
+                `;
+                listEl.appendChild(div);
             });
             lucide.createIcons();
         }
 
         function toggleGoal(id) {
-            const goal = goalsData[activeSubject].find(g => g.id === id);
-            if (goal) { goal.completed = !goal.completed; saveGoals(); renderGoals(); }
+            const g = goalsData[activeSubject].find(x => x.id === id);
+            if(g) {
+                g.completed = !g.completed;
+                saveGoals();
+                renderGoalsList();
+                if(g.completed) showToast("Objective Secured");
+            }
         }
 
-        function deleteGoal(id) {
-            goalsData[activeSubject] = goalsData[activeSubject].filter(g => g.id !== id);
-            saveGoals(); renderGoals();
+        function deleteGoal(subject, id) {
+            if(!goalsData[subject]) return;
+            goalsData[subject] = goalsData[subject].filter(g => g.id !== id);
+            saveGoals();
+            if (!document.getElementById('view-goals-menu').classList.contains('hidden-section')) {
+                renderGoalsMenu();
+            }
+            showToast("Mission Aborted");
         }
 
-        function saveGoals() { localStorage.setItem('jee_2026_goals', JSON.stringify(goalsData)); }
+        function saveGoals() { localStorage.setItem('jee_pro_v2_goals', JSON.stringify(goalsData)); }
 
+        // TRACKER LOGIC
         function switchTab(tab) {
+            if (currentTab === tab && document.getElementById('tracker-body').children.length > 0) return;
             currentTab = tab;
-            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-            document.getElementById(`tab-${tab}`).classList.add('active');
-            renderTable();
+            document.querySelectorAll('.tab-btn').forEach(b => {
+                b.classList.remove('active', 'bg-white', 'text-black');
+                b.classList.add('text-zinc-500');
+            });
+            const active = document.getElementById(`tab-${tab}`);
+            active.classList.add('active', 'bg-white', 'text-black');
+            active.classList.remove('text-zinc-500');
+            renderTableAnimated();
         }
 
-        function renderTable() {
+        function renderTableAnimated() {
             const tbody = document.getElementById('tracker-body');
             tbody.innerHTML = '';
+            const data = subjectData[currentTab];
             const cols = ['theory', '2025', '2024', '2023', '2022', 'booster'];
-            data[currentTab].forEach((ch, i) => {
+            data.forEach((ch, i) => {
                 const tr = document.createElement('tr');
-                tr.className = 'border-b border-white/5 hover:bg-white/[0.02] transition-colors';
-                tr.innerHTML = `<td class="p-6"><div class="flex items-center gap-3">
-                    <span class="text-[9px] font-black px-2 py-0.5 rounded priority-badge-${ch.p}">P-${ch.p}</span>
-                    <span class="font-bold text-slate-200">${ch.name}</span></div></td>
-                    ${cols.map(c => `<td class="p-6 text-center">
-                        <input type="checkbox" class="custom-checkbox" ${userData[`${currentTab}-${i}-${c}`] ? 'checked' : ''} 
-                        onchange="toggleTask('${currentTab}', ${i}, '${c}')"></td>`).join('')}`;
+                tr.className = 'group transition-colors hover:bg-white/[0.05] tracker-row-animate';
+                tr.style.animationDelay = `${i * 0.03}s`;
+                tr.innerHTML = `
+                    <td class="p-8">
+                        <div class="flex flex-col">
+                            <span class="text-[9px] font-black text-zinc-600 uppercase tracking-[0.2em] mb-1">Priority ${ch.p}</span>
+                            <span class="text-base font-bold text-zinc-300 group-hover:text-white transition-colors">${ch.name}</span>
+                        </div>
+                    </td>
+                    ${cols.map(c => `
+                        <td class="p-8 text-center">
+                            <input type="checkbox" class="custom-checkbox" ${userData[`${currentTab}-${i}-${c}`] ? 'checked' : ''} 
+                            onchange="toggleTask('${currentTab}', ${i}, '${c}')">
+                        </td>
+                    `).join('')}
+                `;
                 tbody.appendChild(tr);
             });
             updateProgress();
         }
 
+        function renderTable() { renderTableAnimated(); }
+
         function toggleTask(sub, idx, col) {
             userData[`${sub}-${idx}-${col}`] = !userData[`${sub}-${idx}-${col}`];
-            localStorage.setItem('jee_2026_data', JSON.stringify(userData));
+            localStorage.setItem('jee_pro_v2_data', JSON.stringify(userData));
             updateProgress();
-            showToast("Progress Saved!");
+            showToast("Tracker Updated");
         }
 
         function updateProgress() {
             let total = 0, done = 0;
-            Object.keys(data).forEach(s => data[s].forEach((_, i) => ['theory', '2025', '2024', '2023', '2022', 'booster'].forEach(c => {
+            Object.keys(subjectData).forEach(s => subjectData[s].forEach((_, i) => ['theory', '2025', '2024', '2023', '2022', 'booster'].forEach(c => {
                 total++; if(userData[`${s}-${i}-${c}`]) done++;
             })));
-            const perc = document.getElementById('overall-percentage');
-            if (perc) perc.innerHTML = Math.round((done/total)*100) + "%";
+            const pct = total === 0 ? 0 : Math.round((done/total)*100);
+            document.getElementById('overall-percentage').innerText = pct + "%";
         }
 
-        // Pomodoro Logic
-        function startPomodoro() {
-            const task = document.getElementById('pomo-task-name').value || "Deep Work Session";
-            const focus = parseInt(document.getElementById('pomo-focus-min').value) * 60;
-            
-            if (!focus) return;
+        // POMODORO ENGINE
+        let pomoInterval = null;
+        let pomoTimeLeft = 0;
+        let pomoTotalTime = 0; 
+        let isPomoRunning = false;
+        let isBreakMode = false;
+        let workDuration = 25;
+        let breakDuration = 5;
 
-            document.getElementById('pomo-active-task').innerText = task;
-            document.getElementById('pomodoro-setup').classList.add('hidden');
-            document.getElementById('pomodoro-active').classList.remove('hidden');
-            
-            isFocusMode = true;
-            timeLeft = focus;
-            totalTimeSet = focus;
-            updateTimerDisplay();
-            runTimer();
+        function startAdvancedPomo() {
+            const task = document.getElementById('pomo-task-input').value.trim() || "Deep Work Session";
+            workDuration = parseInt(document.getElementById('pomo-work-val').value) || 25;
+            breakDuration = parseInt(document.getElementById('pomo-break-val').value) || 5;
+            document.getElementById('pomo-task-display').innerText = task;
+            document.getElementById('pomo-setup').classList.add('hidden');
+            document.getElementById('pomo-active').classList.remove('hidden');
+            initPomoTimer(workDuration * 60);
         }
 
-        function runTimer() {
-            clearInterval(timerInterval);
-            timerInterval = setInterval(() => {
-                if (!isPaused) {
-                    timeLeft--;
-                    updateTimerDisplay();
-                    if (timeLeft <= 0) {
-                        clearInterval(timerInterval);
-                        handleTimerEnd();
-                    }
+        function initPomoTimer(seconds) {
+            pomoTimeLeft = seconds;
+            isPomoRunning = true;
+            isBreakMode = false;
+            updatePomoUI();
+            startTicker();
+            showToast("Focus Initiated");
+        }
+
+        function startTicker() {
+            clearInterval(pomoInterval);
+            pomoInterval = setInterval(() => {
+                if (isPomoRunning && pomoTimeLeft > 0) {
+                    pomoTimeLeft--;
+                    if(!isBreakMode) pomoTotalTime++;
+                    updatePomoUI();
+                } else if (pomoTimeLeft <= 0) {
+                    handlePomoPhaseEnd();
                 }
             }, 1000);
         }
 
-        function updateTimerDisplay() {
-            const min = Math.floor(timeLeft / 60);
-            const sec = timeLeft % 60;
-            document.getElementById('timer-display').innerText = `${min.toString().padStart(2, '0')}:${sec.toString().padStart(2, '0')}`;
-            
-            const circle = document.getElementById('timer-progress');
-            const offset = (timeLeft / totalTimeSet) * 283;
-            circle.style.strokeDashoffset = 283 - offset;
-        }
-
-        function handleTimerEnd() {
-            if (isFocusMode) {
-                // Focus ended, start break
-                showToast("Focus complete! Break time.");
-                isFocusMode = false;
-                document.getElementById('pomo-status-label').innerText = "Break Time";
-                document.getElementById('pomo-status-label').classList.add('text-green-500');
-                
-                const breakTime = parseInt(document.getElementById('pomo-break-min').value) * 60;
-                timeLeft = breakTime;
-                totalTimeSet = breakTime;
-                runTimer();
+        function handlePomoPhaseEnd() {
+            clearInterval(pomoInterval);
+            const audio = new Audio('https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3');
+            audio.play().catch(() => {});
+            if (!isBreakMode) {
+                isBreakMode = true;
+                pomoTimeLeft = breakDuration * 60;
+                document.getElementById('pomo-status-label').innerText = "Tactical Break";
+                document.getElementById('pomo-status-label').classList.replace('text-zinc-500', 'text-green-500');
+                showToast("Work Complete. Take a break.");
             } else {
-                // Break ended
-                document.getElementById('pomodoro-active').classList.add('hidden');
-                document.getElementById('pomodoro-next').classList.remove('hidden');
+                isBreakMode = false;
+                pomoTimeLeft = workDuration * 60;
+                document.getElementById('pomo-status-label').innerText = "Deep Work";
+                document.getElementById('pomo-status-label').classList.replace('text-green-500', 'text-zinc-500');
+                showToast("Break Over. Focus again.");
             }
+            startTicker();
         }
 
-        function toggleTimer() {
-            isPaused = !isPaused;
-            document.getElementById('pomo-control-btn').innerText = isPaused ? "Resume" : "Pause";
+        function updatePomoUI() {
+            const m = Math.floor(pomoTimeLeft / 60);
+            const s = pomoTimeLeft % 60;
+            document.getElementById('pomo-timer-text').innerText = `${m}:${s < 10 ? '0'+s : s}`;
+            const total = isBreakMode ? breakDuration * 60 : workDuration * 60;
+            const offset = (pomoTimeLeft / total) * 880;
+            document.getElementById('timer-progress-ring').style.strokeDashoffset = offset;
+            document.getElementById('pomo-total-time').innerText = Math.floor(pomoTotalTime/60) + "m " + (pomoTotalTime%60) + "s";
         }
 
-        function resetPomodoro() {
-            clearInterval(timerInterval);
-            document.getElementById('pomodoro-setup').classList.remove('hidden');
-            document.getElementById('pomodoro-active').classList.add('hidden');
-            document.getElementById('pomodoro-next').classList.add('hidden');
-            document.getElementById('pomo-status-label').innerText = "Focus Mode";
-            document.getElementById('pomo-status-label').classList.remove('text-green-500');
-            isPaused = false;
-            document.getElementById('pomo-control-btn').innerText = "Pause";
+        function togglePomo() {
+            isPomoRunning = !isPomoRunning;
+            const btn = document.getElementById('pomo-play-btn');
+            const icon = document.getElementById('pomo-icon');
+            if(isPomoRunning) {
+                icon.setAttribute('data-lucide', 'pause');
+                btn.classList.remove('bg-white', 'text-black');
+            } else {
+                icon.setAttribute('data-lucide', 'play');
+                btn.classList.add('bg-white', 'text-black');
+            }
+            lucide.createIcons();
         }
 
-        function startNextSession() {
-            document.getElementById('pomodoro-next').classList.add('hidden');
-            startPomodoro();
+        function resetAdvancedPomo() {
+            clearInterval(pomoInterval);
+            isPomoRunning = false;
+            document.getElementById('pomo-setup').classList.remove('hidden');
+            document.getElementById('pomo-active').classList.add('hidden');
         }
 
-        function showToast(m) {
-            const t = document.getElementById("toast");
-            t.innerText = m; t.classList.add("show");
-            setTimeout(() => t.classList.remove("show"), 2500);
+        // UTILS
+        function showToast(msg) {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            toast.className = 'bg-white text-black px-6 py-3 rounded-xl font-black text-xs uppercase tracking-widest shadow-2xl animate-up';
+            toast.innerText = msg;
+            container.appendChild(toast);
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                toast.style.transform = 'translateY(-20px)';
+                setTimeout(() => toast.remove(), 500);
+            }, 2500);
         }
 
         window.onload = () => {
             lucide.createIcons();
-            renderTable();
+            switchTab('Math');
         };
     </script>
 </body>
